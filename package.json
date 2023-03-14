@@ -1,0 +1,34 @@
+{
+  "name": "notesapp-backend",
+  "version": "1.0.0",
+  "description": "### The backend for the NotesApp using : * `Express` for handling API request * `Sqlite` as database * JWT or Session-based Authentication",
+  "main": "index.js",
+  "types": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yashshrivastava7/NotesApp-backend.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc && node ./dist/js/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yashshrivastava7/NotesApp-backend/issues"
+  },
+  "homepage": "https://github.com/Yashshrivastava7/NotesApp-backend#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.3",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.2",
+    "nodemon": "^2.0.21"
+  }
+}
