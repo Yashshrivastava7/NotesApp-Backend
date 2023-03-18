@@ -10,7 +10,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc && node ./dist/js/index.js"
+    "dev": "tsc && node ./dist/js/index.js",
+    "watch": "tsc --watch",
+    "nodemon": "nodemon ./dist/js/index.js"
   },
   "keywords": [],
   "author": "",
