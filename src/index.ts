@@ -47,7 +47,7 @@ app.post('/login', (req: Request, res: Response) => {
   async function run() {
     const checker = await UserPass.find({username:username,password:password}).exec();
     if(checker.length===0){
-      return res.status(400).send("Inlavid Credentials");
+      return res.status(400).send("Invalid Credentials");
     }
     else {
       const AccessToken = jwt.sign({username: username}, process.env.ACCESS_TOKEN, { expiresIn: '10m' });
