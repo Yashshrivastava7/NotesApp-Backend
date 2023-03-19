@@ -5,7 +5,7 @@ export const UserPassSchema = new Schema({
     password: {type: String}
 });
 
-export const NotesSchema = new Schema({
+export const NoteSchema = new Schema({
     username: {type: String},
     title: {type: String},
     notes: {type: String}
