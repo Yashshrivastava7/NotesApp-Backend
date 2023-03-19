@@ -11,7 +11,7 @@ const Notes = mongoose.model("Notes", NotesSchema);
 const express = require('express');
 
 const app: Express = express();
-const port = 8080;
+const PORT = 8080;
 const jwt = require('jsonwebtoken');
 
 app.use(express.json());
