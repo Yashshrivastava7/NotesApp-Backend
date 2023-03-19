@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 
-export const UserPass = new Schema({
+export const UserPassSchema = new Schema({
     username: {type: String},
     password: {type: String}
 });
 
-export const Notes = new Schema({
+export const NoteSchema = new Schema({
     username: {type: String},
     title: {type: String},
-    notes: {type: String}
+    note: {type: String}
 });
