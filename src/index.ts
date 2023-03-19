@@ -1,13 +1,13 @@
 require('dotenv').config({path:'./.env'});
 import { Express, Request, Response } from 'express';
-import { UserPassSchema , NotesSchema } from './models/Models';
+import { UserPassSchema , NoteSchema } from './models/Models';
 import mongoose from 'mongoose';
 const jwt = require('jsonwebtoken');
 const UserPass = mongoose.model("UserPass", UserPassSchema);
-const Notes = mongoose.model("Notes", NotesSchema);
+const Notes = mongoose.model("Notes", NoteSchema);
 const express = require('express');
 
-mongoose.connect("mongodb+srv://yashnode:<password>@cluster0.nbdaj.mongodb.net/?retryWrites=true&w=majority");
+mongoose.connect("mongodb+srv://<usernmae>:<password>@cluster0.jnmzzaw.mongodb.net/?retryWrites=true&w=majority");
 
 const app: Express = express();
 const port = 8080;
