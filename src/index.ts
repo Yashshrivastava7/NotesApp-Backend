@@ -51,7 +51,7 @@ app.post('/login', (req: Request, res: Response) => {
     }
     else {
       const AccessToken = jwt.sign({username: username}, process.env.ACCESS_TOKEN, { expiresIn: '10m' });
-      return res.status(200).json({ AccessToken: AccessToken });
+      return res.status(200).json({ AccessToken: accessToken });
     }
   }
 });
