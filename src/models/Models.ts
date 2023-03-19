@@ -8,5 +8,5 @@ export const UserPassSchema = new Schema({
 export const NoteSchema = new Schema({
     username: {type: String},
     title: {type: String},
-    notes: {type: String}
+    note: {type: String}
 });
