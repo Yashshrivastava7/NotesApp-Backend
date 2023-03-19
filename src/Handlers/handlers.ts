@@ -14,17 +14,17 @@ exports.checkUser = (req: Request , res: Response) => {
 }
 
 exports.handleSignup =  async (req: Request, res: Response) => {
-	const username: string = req.body.username;
-	const password: string = req.body.password;
-	const checker = await UserPass.find({ 
-		username: username 
-	}).exec();
-	if (checker.length !== 0) {
-		return res.status(400).send("User already exists");
-	} else {
-		await UserPass.create({ username: username, password: password });
-		return res.status(200).send("User registered successfully");
-	}
+  const username: string = req.body.username;
+  const password: string = req.body.password;
+  const checker = await UserPass.find({ 
+    username: username 
+    }).exec();
+  if (checker.length !== 0) {
+    return res.status(400).send("User already exists");
+  } else {
+    await UserPass.create({ username: username, password: password });
+    return res.status(200).send("User registered successfully");
+  }
 }
 
 exports.handleLogin = async (req: Request, res: Response) => {
