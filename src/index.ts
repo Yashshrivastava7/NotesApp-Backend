@@ -1,6 +1,7 @@
 require('dotenv').config({path:'./.env'});
 import { Express, Request, Response } from 'express';
 import { UserPassSchema , NoteSchema } from './models/Models';
+import authenticate from './Auth';
 import mongoose from 'mongoose';
 const jwt = require('jsonwebtoken');
 const UserPass = mongoose.model("UserPass", UserPassSchema);
@@ -56,7 +57,7 @@ app.post("/login", async (req: Request, res: Response) => {
     const AccessToken = jwt.sign(
       { username: username },
       process.env.ACCESS_TOKEN,
-      { expiresIn: "10m" }
+      { expiresIn: "30m" }
     );
     return res.status(200).json({ AccessToken: AccessToken });
   }
@@ -88,18 +89,6 @@ app.delete('/notes/:id', authenticate, async (req: Request, res: Response) => {
   await Notes.findOneAndDelete({username: req.username, _id: req.params.id});
   return res.status(204).send("Note deleted successfully");
 })
-
-function authenticate(req : Request, res : Response, next) {
-  const authHeader = req.headers['authorization'];
-  const token : string = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401)
-
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, data) => {
-    if (err) return res.sendStatus(403)
-    req.username = data.username;
-    next()
-  })
-}
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
