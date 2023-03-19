@@ -7,7 +7,13 @@ const UserPass = mongoose.model("UserPass", UserPassSchema);
 const Notes = mongoose.model("Notes", NoteSchema);
 const express = require('express');
 
-mongoose.connect("mongodb+srv://<usernmae>:<password>@cluster0.jnmzzaw.mongodb.net/?retryWrites=true&w=majority");
+declare module 'express' {
+  export interface Request {
+    username?: string
+  }
+}
+
+mongoose.connect("mongodb+srv://yashnodets:yashnodetsx@cluster0.jnmzzaw.mongodb.net/?retryWrites=true&w=majority");
 
 const app: Express = express();
 const port = 8080;
@@ -20,7 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/user', authenticate , (req: Request , res: Response) => {
-  return res.status(200).send("Success");
+  return res.status(200).send(`Success and user is ${req.username}`);
 });
 
 app.post("/signup", async (req: Request, res: Response) => {
@@ -56,13 +62,32 @@ app.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-app.post('/notes', authenticate , (req: Request, res: Response) => {
-
+app.get('/notes', authenticate, async (req: Request, res: Response) => {
+  const username = req.username; //coming straight from authenticate function
+  const notes = await Notes.find({username: username}).exec();
+  return res.status(200).send(notes);
 });
 
-app.get('/notes/:user', authenticate , (req: Request, res: Response) => {
-
+app.post('/notes', authenticate , async (req: Request, res: Response) => {
+  await Notes.create({ username: req.username , title: req.body.title, note: req.body.note});
+  return res.status(200).send("Note added succesfully");
 });
+
+app.delete('/notes/:id', authenticate, async (req: Request, res: Response) => {
+  let delNote = undefined;
+  try {
+    delNote = await Notes.findById(req.params.id).exec();
+  } catch (e) {
+    console.error("There was an error");
+  }
+  
+  console.log(delNote);
+  if(!delNote){
+    return res.status(400).send("Invalid Request");
+  }
+  await Notes.findOneAndDelete({username: req.username, _id: req.params.id});
+  return res.status(204).send("Note deleted successfully");
+})
 
 function authenticate(req : Request, res : Response, next) {
   const authHeader = req.headers['authorization'];
@@ -70,8 +95,8 @@ function authenticate(req : Request, res : Response, next) {
   if (token == null) return res.sendStatus(401)
 
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, data) => {
-    console.log(err, data)
     if (err) return res.sendStatus(403)
+    req.username = data.username;
     next()
   })
 }
