@@ -22,14 +22,17 @@ export const checkUser = (req: Request, res: Response) => {
 export const handleSignup = async (req: Request, res: Response) => {
   const username: string = req.body.username;
   const password: string = req.body.password;
+  console.log(`[POST /signup]`);
+  console.log(`Username Received: ${username}`);
   const checker = await UserPass.find({
     username: username,
   }).exec();
   if (checker.length !== 0) {
+    console.error(`${username} already exists in database`);
     return res.status(400).send("User already exists");
   } else {
     await UserPass.create({ username: username, password: password });
-    console.log(`Registered user ${username}`)
+    console.log(`Registered user ${username}`);
     return res.status(200).send("User registered successfully");
   }
 };
@@ -37,11 +40,14 @@ export const handleSignup = async (req: Request, res: Response) => {
 export const handleLogin = async (req: Request, res: Response) => {
   const username = req.body.username;
   const password = req.body.password;
+  console.log(`[POST /login]`);
+  console.log(`Username Received: ${username}`);
   const checker = await UserPass.find({
     username: username,
     password: password,
   }).exec();
   if (checker.length === 0) {
+    console.error(`Invalid Credentials for Username: ${username}`);
     return res.status(400).send("Inlavid Credentials");
   } else {
     const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
@@ -54,6 +60,8 @@ export const handleLogin = async (req: Request, res: Response) => {
 
 export const getAllNotes = async (req: Request, res: Response) => {
   const username = req.username; //coming straight from authenticate function
+  console.log(`[GET /notes]`);
+  console.log(`Fetching all notes for username: ${username}`);
   const notes = await Notes.find({ username: username }).exec();
   return res.status(200).send(notes);
 };
@@ -71,17 +79,19 @@ export const addNote = async (req: Request, res: Response) => {
 };
 
 export const deleteNote = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  console.log(`[DELETE /notes/${id}]`);
   let delNote = undefined;
   try {
-    delNote = await Notes.findById(req.params.id).exec();
+    delNote = await Notes.findById(id).exec();
   } catch (e) {
-    console.error("There was an error");
+    console.error(`Could not find note with ID: ${id} for deletion`);
   }
 
-  console.log(delNote);
   if (!delNote) {
     return res.status(400).send("Invalid Request");
   }
+
   await Notes.findOneAndDelete({ username: req.username, _id: req.params.id });
   return res.status(204).send("Note deleted successfully");
 };
