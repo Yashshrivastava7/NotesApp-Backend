@@ -1,25 +1,31 @@
-require('dotenv').config({path:'./.env'});
-import { Express, Request, Response } from 'express';
-const express = require('express');
-const requestHandlers = require('./Handlers/handlers');
-import authenticate from './Auth';
+import express from "express";
+import {
+  checkUser,
+  handleSignup,
+  handleLogin,
+  getSingleNote,
+  getAllNotes,
+  addNote,
+  deleteNote,
+} from "./Handlers/handlers";
+import authenticate from "./Auth";
 
-const app: Express = express();
+const app = express();
 const port = 8080;
-
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+app.get("/", (_, res) => {
+  res.send("Express + TypeScript Server");
 });
 
-app.get("/user", authenticate, requestHandlers.checkUser);
-app.post("/signup", requestHandlers.handleSignup);
-app.post("/login", requestHandlers.handleLogin);
-app.get("/notes", authenticate, requestHandlers.getAllNotes);
-app.post("/notes", authenticate, requestHandlers.addNote);
-app.delete("/notes/:id", authenticate, requestHandlers.deleteNote);
+app.get("/user", authenticate, checkUser);
+app.post("/signup", handleSignup);
+app.post("/login", handleLogin);
+app.get("/notes/:id", authenticate, getSingleNote);
+app.get("/notes", authenticate, getAllNotes);
+app.post("/notes", authenticate, addNote);
+app.delete("/notes/:id", authenticate, deleteNote);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
