@@ -1,8 +1,10 @@
-require("dotenv").config({ path: "./.env" });
-import { Express, Request, Response } from "express";
+import { Request, Response } from "express";
 import { UserPassSchema, NoteSchema } from "../models/Models";
-const jwt = require("jsonwebtoken");
+import { sign } from "jsonwebtoken";
 import mongoose from "mongoose";
+
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const mongoUsername = process.env.MONGO_USER;
 const mongoPassword = process.env.MONGO_PASSWORD;
@@ -13,11 +15,11 @@ mongoose.connect(mongoURI);
 const UserPass = mongoose.model("UserPass", UserPassSchema);
 const Notes = mongoose.model("Notes", NoteSchema);
 
-exports.checkUser = (req: Request, res: Response) => {
+export const checkUser = (req: Request, res: Response) => {
   return res.status(200).send(`Success and user is ${req.username}`);
 };
 
-exports.handleSignup = async (req: Request, res: Response) => {
+export const handleSignup = async (req: Request, res: Response) => {
   const username: string = req.body.username;
   const password: string = req.body.password;
   const checker = await UserPass.find({
@@ -31,7 +33,7 @@ exports.handleSignup = async (req: Request, res: Response) => {
   }
 };
 
-exports.handleLogin = async (req: Request, res: Response) => {
+export const handleLogin = async (req: Request, res: Response) => {
   const username = req.body.username;
   const password = req.body.password;
   const checker = await UserPass.find({
@@ -41,22 +43,20 @@ exports.handleLogin = async (req: Request, res: Response) => {
   if (checker.length === 0) {
     return res.status(400).send("Inlavid Credentials");
   } else {
-    const AccessToken = jwt.sign(
-      { username: username },
-      process.env.ACCESS_TOKEN,
-      { expiresIn: "30m" }
-    );
+    const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
+      expiresIn: "30m",
+    });
     return res.status(200).json({ AccessToken: AccessToken });
   }
 };
 
-exports.getAllNotes = async (req: Request, res: Response) => {
+export const getAllNotes = async (req: Request, res: Response) => {
   const username = req.username; //coming straight from authenticate function
   const notes = await Notes.find({ username: username }).exec();
   return res.status(200).send(notes);
 };
 
-exports.addNote = async (req: Request, res: Response) => {
+export const addNote = async (req: Request, res: Response) => {
   const title = req.body.title;
   const note = req.body.note;
   console.log(`[POST /notes] \nTitle: ${title}\nnote: ${note}`);
@@ -68,7 +68,7 @@ exports.addNote = async (req: Request, res: Response) => {
   return res.status(200).send("Note added succesfully");
 };
 
-exports.deleteNote = async (req: Request, res: Response) => {
+export const deleteNote = async (req: Request, res: Response) => {
   let delNote = undefined;
   try {
     delNote = await Notes.findById(req.params.id).exec();
@@ -84,7 +84,7 @@ exports.deleteNote = async (req: Request, res: Response) => {
   return res.status(204).send("Note deleted successfully");
 };
 
-exports.getSingleNote = async (req: Request, res: Response) => {
+export const getSingleNote = async (req: Request, res: Response) => {
   const id = req.params.id;
   console.log(`[GET /notes/${id}]`);
   let note = undefined;

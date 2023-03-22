@@ -1,6 +1,8 @@
-require("dotenv").config({ path: "./.env" });
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
+
+import * as dotenv from "dotenv";
+dotenv.config();
 
 declare module "express" {
   export interface Request {
@@ -8,7 +10,11 @@ declare module "express" {
   }
 }
 
-export default function authenticate(req: Request, res: Response, next) {
+export default function authenticate(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const authHeader = req.headers["authorization"];
   const token: string = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401);
