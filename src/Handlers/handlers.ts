@@ -29,6 +29,7 @@ export const handleSignup = async (req: Request, res: Response) => {
     return res.status(400).send("User already exists");
   } else {
     await UserPass.create({ username: username, password: password });
+    console.log(`Registered user ${username}`)
     return res.status(200).send("User registered successfully");
   }
 };
@@ -46,6 +47,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
       expiresIn: "30m",
     });
+    console.log(`Login successful for user ${username}`);
     return res.status(200).json({ AccessToken: AccessToken });
   }
 };
