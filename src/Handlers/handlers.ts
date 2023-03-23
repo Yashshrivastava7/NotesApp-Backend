@@ -16,7 +16,7 @@ const UserPass = mongoose.model("UserPass", UserPassSchema);
 const Notes = mongoose.model("Notes", NoteSchema);
 
 export const checkUser = (req: Request, res: Response) => {
-  return res.status(200).send(`Success and user is ${req.username}`);
+  return res.status(200).json({ data:`Success and user is ${req.username}` });
 };
 
 export const handleSignup = async (req: Request, res: Response) => {
@@ -29,11 +29,11 @@ export const handleSignup = async (req: Request, res: Response) => {
   }).exec();
   if (checker.length !== 0) {
     console.error(`${username} already exists in database`);
-    return res.status(400).send("User already exists");
+    return res.status(400).json({ error: "User already exists" });
   } else {
     await UserPass.create({ username: username, password: password });
     console.log(`Registered user ${username}`);
-    return res.status(200).send("User registered successfully");
+    res.status(200).json({ data: `${username} registered successfully` });
   }
 };
 
@@ -48,7 +48,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   }).exec();
   if (checker.length === 0) {
     console.error(`Invalid Credentials for Username: ${username}`);
-    return res.status(400).send("Inlavid Credentials");
+    return res.status(400).json({ error: "Invalid Credentials" });
   } else {
     const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
       expiresIn: "30m",
@@ -63,7 +63,7 @@ export const getAllNotes = async (req: Request, res: Response) => {
   console.log(`[GET /notes]`);
   console.log(`Fetching all notes for username: ${username}`);
   const notes = await Notes.find({ username: username }).exec();
-  return res.status(200).send(notes);
+  return res.status(200).json(notes);
 };
 
 export const addNote = async (req: Request, res: Response) => {
@@ -75,7 +75,7 @@ export const addNote = async (req: Request, res: Response) => {
     title: req.body.title,
     note: req.body.note,
   });
-  return res.status(200).send("Note added succesfully");
+  return res.status(200).json({ data: "Note added succesfully" });
 };
 
 export const deleteNote = async (req: Request, res: Response) => {
@@ -89,11 +89,11 @@ export const deleteNote = async (req: Request, res: Response) => {
   }
 
   if (!delNote) {
-    return res.status(400).send("Invalid Request");
+    return res.status(400).json({ error: "Invalid Request" });
   }
 
   await Notes.findOneAndDelete({ username: req.username, _id: req.params.id });
-  return res.status(204).send("Note deleted successfully");
+  return res.status(204).json({ data:"Note deleted successfully"} );
 };
 
 export const getSingleNote = async (req: Request, res: Response) => {
@@ -104,7 +104,7 @@ export const getSingleNote = async (req: Request, res: Response) => {
     note = await Notes.findById(id).exec();
   } catch (e) {
     console.error("Error fetching record from DB with ID: " + id);
-    return res.status(500).send("Error Fetching Record from DB");
+    return res.status(500).json({ error:"Error Fetching Record from DB" });
   }
   console.log("Returning Note:");
   console.log(note);
