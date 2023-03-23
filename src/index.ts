@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"
 import {
   checkUser,
   handleSignup,
@@ -13,6 +14,13 @@ import authenticate from "./Auth";
 const app = express();
 const port = 8080;
 
+const corsOptions ={
+   origin:'*', 
+   credentials:true,    
+   optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json());
 
 app.get("/", (_, res) => {
