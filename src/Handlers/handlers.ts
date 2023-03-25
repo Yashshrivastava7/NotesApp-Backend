@@ -16,7 +16,7 @@ const UserPass = mongoose.model("UserPass", UserPassSchema);
 const Notes = mongoose.model("Notes", NoteSchema);
 
 export const checkUser = (req: Request, res: Response) => {
-  return res.status(200).json({ data:`Success and user is ${req.username}` });
+  return res.status(200).json({ data: `Success and user is ${req.username}` });
 };
 
 export const handleSignup = async (req: Request, res: Response) => {
@@ -62,7 +62,9 @@ export const getAllNotes = async (req: Request, res: Response) => {
   const username = req.username; //coming straight from authenticate function
   console.log(`[GET /notes]`);
   console.log(`Fetching all notes for username: ${username}`);
-  const notes = await Notes.find({ username: username }).exec();
+  const notes = await Notes.find({ username: username }, null, {
+    sort: { _id: "desc" },
+  }).exec();
   return res.status(200).json(notes);
 };
 
@@ -93,7 +95,7 @@ export const deleteNote = async (req: Request, res: Response) => {
   }
 
   await Notes.findOneAndDelete({ username: req.username, _id: req.params.id });
-  return res.status(204).json({ data:"Note deleted successfully"} );
+  return res.status(204).json({ data: "Note deleted successfully" });
 };
 
 export const getSingleNote = async (req: Request, res: Response) => {
@@ -104,7 +106,7 @@ export const getSingleNote = async (req: Request, res: Response) => {
     note = await Notes.findById(id).exec();
   } catch (e) {
     console.error("Error fetching record from DB with ID: " + id);
-    return res.status(500).json({ error:"Error Fetching Record from DB" });
+    return res.status(500).json({ error: "Error Fetching Record from DB" });
   }
   console.log("Returning Note:");
   console.log(note);
