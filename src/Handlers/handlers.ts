@@ -24,6 +24,11 @@ export const handleSignup = async (req: Request, res: Response) => {
   const password: string = req.body.password;
   console.log(`[POST /signup]`);
   console.log(`Username Received: ${username}`);
+  if (!username || !password) {
+    return res
+      .status(401)
+      .json({ message: "Username and password cannot be empty" });
+  }
   const checker = await UserPass.find({
     username: username,
   }).exec();
@@ -40,6 +45,11 @@ export const handleSignup = async (req: Request, res: Response) => {
 export const handleLogin = async (req: Request, res: Response) => {
   const username = req.body.username;
   const password = req.body.password;
+  if (!username || !password) {
+    return res
+      .status(401)
+      .json({ message: "Username and password cannot be empty" });
+  }
   console.log(`[POST /login]`);
   console.log(`Username Received: ${username}`);
   const checker = await UserPass.find({
@@ -71,6 +81,9 @@ export const getAllNotes = async (req: Request, res: Response) => {
 export const addNote = async (req: Request, res: Response) => {
   const title = req.body.title;
   const note = req.body.note;
+  if (!title) {
+    return res.status(401).json({ message: "Title cannot be empty" });
+  }
   console.log(`[POST /notes] \nTitle: ${title}\nnote: ${note}`);
   await Notes.create({
     username: req.username,
