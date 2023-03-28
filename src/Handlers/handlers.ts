@@ -61,7 +61,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid Credentials" });
   } else {
     const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
-      expiresIn: "30m",
+      expiresIn: "60m",
     });
     console.log(`Login successful for user ${username}`);
     return res.status(200).json({ AccessToken: AccessToken });
