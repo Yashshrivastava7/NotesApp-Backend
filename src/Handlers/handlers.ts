@@ -24,6 +24,11 @@ export const handleSignup = async (req: Request, res: Response) => {
   const password: string = req.body.password;
   console.log(`[POST /signup]`);
   console.log(`Username Received: ${username}`);
+  if (!username || !password) {
+    return res
+      .status(401)
+      .json({ message: "Username and password cant be empty" });
+  }
   const checker = await UserPass.find({
     username: username,
   }).exec();
@@ -40,6 +45,11 @@ export const handleSignup = async (req: Request, res: Response) => {
 export const handleLogin = async (req: Request, res: Response) => {
   const username = req.body.username;
   const password = req.body.password;
+  if (!username || !password) {
+    return res
+      .status(401)
+      .json({ message: "Username and password cant be empty" });
+  }
   console.log(`[POST /login]`);
   console.log(`Username Received: ${username}`);
   const checker = await UserPass.find({
