@@ -34,7 +34,7 @@ export const handleSignup = async (req: Request, res: Response) => {
   }).exec();
   if (checker.length !== 0) {
     console.error(`${username} already exists in database`);
-    return res.status(400).json({ error: "User already exists" });
+    return res.status(400).json({ message: "User already exists" });
   } else {
     await UserPass.create({ username: username, password: password });
     console.log(`Registered user ${username}`);
@@ -58,7 +58,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   }).exec();
   if (checker.length === 0) {
     console.error(`Invalid Credentials for Username: ${username}`);
-    return res.status(400).json({ error: "Invalid Credentials" });
+    return res.status(400).json({ message: "Invalid Credentials" });
   } else {
     const AccessToken = sign({ username: username }, process.env.ACCESS_TOKEN, {
       expiresIn: "60m",
@@ -104,7 +104,7 @@ export const deleteNote = async (req: Request, res: Response) => {
   }
 
   if (!delNote) {
-    return res.status(400).json({ error: "Invalid Request" });
+    return res.status(400).json({ message: "Invalid Request" });
   }
 
   await Notes.findOneAndDelete({ username: req.username, _id: req.params.id });
@@ -119,7 +119,7 @@ export const getSingleNote = async (req: Request, res: Response) => {
     note = await Notes.findById(id).exec();
   } catch (e) {
     console.error("Error fetching record from DB with ID: " + id);
-    return res.status(500).json({ error: "Error Fetching Record from DB" });
+    return res.status(500).json({ message: "Error Fetching Record from DB" });
   }
   console.log("Returning Note:");
   console.log(note);
