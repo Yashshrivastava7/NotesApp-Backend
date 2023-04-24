@@ -10,6 +10,8 @@ const mongoUsername = process.env.MONGO_USER;
 const mongoPassword = process.env.MONGO_PASSWORD;
 const mongoCluster = process.env.MONGO_CLUSTER;
 const mongoURI = `mongodb+srv://${mongoUsername}:${mongoPassword}@${mongoCluster}`;
+const ACCESS_TOKEN_NAME = "access_token";
+
 mongoose.connect(mongoURI);
 
 const UserPass = mongoose.model("UserPass", UserPassSchema);
@@ -64,12 +66,11 @@ export const handleLogin = async (req: Request, res: Response) => {
       expiresIn: "60m",
     });
     console.log(`Login successful for user ${username}`);
-    res.cookie("access_token", AccessToken, {
+    res.cookie(ACCESS_TOKEN_NAME, AccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 1000, //60 minutes
-    })
-    return res.status(200).json({ AccessToken: AccessToken });
+    }).sendStatus(200);
   }
 };
 
@@ -130,3 +131,11 @@ export const getSingleNote = async (req: Request, res: Response) => {
   console.log(note);
   return res.status(200).json(note);
 };
+
+export const logoutUser = async (_: Request, res: Response) => {
+  console.log(`[GET /logout]`);
+  return res
+    .clearCookie(ACCESS_TOKEN_NAME)
+    .status(200)
+    .json({ message: "Successfully Logged out!" });
+}

@@ -8,6 +8,7 @@ import {
   getAllNotes,
   addNote,
   deleteNote,
+  logoutUser,
 } from "./Handlers/handlers";
 import authenticate from "./Auth";
 import cookieParser from "cookie-parser";
@@ -32,6 +33,7 @@ app.get("/", (_, res) => {
 app.get("/user", authenticate, checkUser);
 app.post("/signup", handleSignup);
 app.post("/login", handleLogin);
+app.get("/logout", authenticate, logoutUser);
 app.get("/notes/:id", authenticate, getSingleNote);
 app.get("/notes", authenticate, getAllNotes);
 app.post("/notes", authenticate, addNote);
