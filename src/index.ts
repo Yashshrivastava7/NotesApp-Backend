@@ -10,7 +10,7 @@ import {
   deleteNote,
 } from "./Handlers/handlers";
 import authenticate from "./Auth";
-import * as cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 8080;

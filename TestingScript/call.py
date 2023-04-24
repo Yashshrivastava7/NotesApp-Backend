@@ -5,7 +5,7 @@ from decorate import decorate
 URL = "http://localhost:8080"
 TOKEN = None
 
-sesh = sesh.Session()
+sesh = requests.Session()
 
 @decorate
 def test_login(username, password):
