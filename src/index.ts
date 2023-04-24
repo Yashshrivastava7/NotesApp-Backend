@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors"
+import cors from "cors";
 import {
   checkUser,
   handleSignup,
@@ -10,18 +10,20 @@ import {
   deleteNote,
 } from "./Handlers/handlers";
 import authenticate from "./Auth";
+import * as cookieParser from "cookie-parser";
 
 const app = express();
 const port = 8080;
 
-const corsOptions ={
-   origin:'*', 
-   credentials:true,    
-   optionSuccessStatus:200,
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  optionSuccessStatus: 200,
 }
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (_, res) => {
   res.send("Express + TypeScript Server");

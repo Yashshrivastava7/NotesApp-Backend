@@ -64,6 +64,11 @@ export const handleLogin = async (req: Request, res: Response) => {
       expiresIn: "60m",
     });
     console.log(`Login successful for user ${username}`);
+    res.cookie("access_token", AccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 1000, //60 minutes
+    })
     return res.status(200).json({ AccessToken: AccessToken });
   }
 };

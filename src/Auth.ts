@@ -15,15 +15,15 @@ export default function authenticate(
   res: Response,
   next: NextFunction
 ) {
-  const authHeader = req.headers["authorization"];
-  const token: string = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-
-  verify(token, process.env.ACCESS_TOKEN, (err, data: any) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
+  const accessToken = req.cookies.access_token;
+  if (!accessToken) {
+    return res.sendStatus(403);
+  }
+  try {
+    const data = verify(accessToken, process.env.ACCESS_TOKEN);
     req.username = data.username;
-    next();
-  });
+    return next();
+  } catch {
+    return res.sendStatus(403);
+  }
 }
