@@ -3,26 +3,21 @@ import json
 from decorate import decorate
 
 URL = "http://localhost:8080"
-TOKEN = None
-
+sesh = requests.Session()
 
 @decorate
 def test_login(username, password):
-    global TOKEN
     print(f"Testing Login Path for Username: {username} and Password: {password}")
     data = {"username": username, "password": password}
-    r = requests.post(URL + "/login", json=data)
+    r = sesh.post(URL + "/login", json=data)
     print(r)
-    data = json.loads(r.text)
-    print(data)
-    TOKEN = data["AccessToken"]
 
 
 @decorate
 def test_signup(username, password):
     print(f"Testing Signup Path for Username: {username} and Password: {password}")
     creds = {"username": username, "password": password}
-    r = requests.post(URL + "/signup", json=creds)
+    r = sesh.post(URL + "/signup", json=creds)
     print(r)
     print(r.text)
 
@@ -30,7 +25,7 @@ def test_signup(username, password):
 @decorate
 def test_root():
     print("Testing Root Path")
-    r = requests.get(URL + "/")
+    r = sesh.get(URL + "/")
     print(r)
     print(r.text)
 
@@ -38,9 +33,7 @@ def test_root():
 @decorate
 def test_add_note(note):
     print(f"Testing Add Note for Note: {note}")
-    assert TOKEN is not None
-    headers = {"Authorization": "Bearer " + TOKEN}
-    r = requests.post(URL + "/notes", json=note, headers=headers)
+    r = sesh.post(URL + "/notes", json=note)
     print(r)
     print(r.text)
 
@@ -48,10 +41,10 @@ def test_add_note(note):
 @decorate
 def test_get_all_notes():
     print("Testing Get All Notes")
-    assert TOKEN is not None
-    headers = {"Authorization": "Bearer " + TOKEN}
-    r = requests.get(URL + "/notes", headers=headers)
+    r = sesh.get(URL + "/notes")
     print(r)
+    if r.status_code == 403:
+        return None
     print(r.json())
     return r.json()
 
@@ -59,9 +52,7 @@ def test_get_all_notes():
 @decorate
 def test_get_note(id):
     print(f"Testing Get Single Note for ID: {id}")
-    assert TOKEN is not None
-    headers = {"Authorization": "Bearer " + TOKEN}
-    r = requests.get(URL + "/notes/" + id, headers=headers)
+    r = sesh.get(URL + "/notes/" + id)
     print(r)
     print(r.text)
 
@@ -69,11 +60,17 @@ def test_get_note(id):
 @decorate
 def test_delete_note(id):
     print(f"Testing Delete Single Note for ID: {id}")
-    assert TOKEN is not None
-    headers = {"Authorization": "Bearer " + TOKEN}
-    r = requests.delete(URL + "/notes/" + id, headers=headers)
+    r = sesh.delete(URL + "/notes/" + id)
     print(r)
     print(r.text)
+
+@decorate
+def test_logout():
+    print("Testing Logout!")
+    r = sesh.get(URL + "/logout")
+    print(r)
+    print(r.cookies)
+    print(r.json())
 
 
 if __name__ == "__main__":
@@ -98,3 +95,7 @@ if __name__ == "__main__":
         test_delete_note(id)
 
     test_get_all_notes()
+
+    test_logout()
+    test_get_all_notes()
+

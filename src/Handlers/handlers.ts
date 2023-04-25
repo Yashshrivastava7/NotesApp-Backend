@@ -10,6 +10,8 @@ const mongoUsername = process.env.MONGO_USER;
 const mongoPassword = process.env.MONGO_PASSWORD;
 const mongoCluster = process.env.MONGO_CLUSTER;
 const mongoURI = `mongodb+srv://${mongoUsername}:${mongoPassword}@${mongoCluster}`;
+const ACCESS_TOKEN_NAME = "access_token";
+
 mongoose.connect(mongoURI);
 
 const UserPass = mongoose.model("UserPass", UserPassSchema);
@@ -26,7 +28,7 @@ export const handleSignup = async (req: Request, res: Response) => {
   console.log(`Username Received: ${username}`);
   if (!username || !password) {
     return res
-      .status(401)
+      .status(400)
       .json({ message: "Username and password cannot be empty" });
   }
   const checker = await UserPass.find({
@@ -47,7 +49,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   const password = req.body.password;
   if (!username || !password) {
     return res
-      .status(401)
+      .status(400)
       .json({ message: "Username and password cannot be empty" });
   }
   console.log(`[POST /login]`);
@@ -64,7 +66,11 @@ export const handleLogin = async (req: Request, res: Response) => {
       expiresIn: "60m",
     });
     console.log(`Login successful for user ${username}`);
-    return res.status(200).json({ AccessToken: AccessToken });
+    res.cookie(ACCESS_TOKEN_NAME, AccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 1000, //60 minutes
+    }).sendStatus(200);
   }
 };
 
@@ -81,10 +87,10 @@ export const getAllNotes = async (req: Request, res: Response) => {
 export const addNote = async (req: Request, res: Response) => {
   const title = req.body.title;
   const note = req.body.note;
-  if (!title) {
-    return res.status(401).json({ message: "Title cannot be empty" });
-  }
   console.log(`[POST /notes] \nTitle: ${title}\nnote: ${note}`);
+  if (!title) {
+    return res.status(400).json({ message: "Title cannot be empty" });
+  }
   await Notes.create({
     username: req.username,
     title: req.body.title,
@@ -121,7 +127,13 @@ export const getSingleNote = async (req: Request, res: Response) => {
     console.error("Error fetching record from DB with ID: " + id);
     return res.status(500).json({ message: "Error Fetching Record from DB" });
   }
-  console.log("Returning Note:");
-  console.log(note);
   return res.status(200).json(note);
 };
+
+export const logoutUser = async (_: Request, res: Response) => {
+  console.log(`[GET /logout]`);
+  return res
+    .clearCookie(ACCESS_TOKEN_NAME)
+    .status(200)
+    .json({ message: "Successfully Logged out!" });
+}
