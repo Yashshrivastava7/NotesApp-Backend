@@ -28,7 +28,7 @@ export const handleSignup = async (req: Request, res: Response) => {
   console.log(`Username Received: ${username}`);
   if (!username || !password) {
     return res
-      .status(401)
+      .status(400)
       .json({ message: "Username and password cannot be empty" });
   }
   const checker = await UserPass.find({
@@ -49,7 +49,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   const password = req.body.password;
   if (!username || !password) {
     return res
-      .status(401)
+      .status(400)
       .json({ message: "Username and password cannot be empty" });
   }
   console.log(`[POST /login]`);
@@ -87,10 +87,10 @@ export const getAllNotes = async (req: Request, res: Response) => {
 export const addNote = async (req: Request, res: Response) => {
   const title = req.body.title;
   const note = req.body.note;
-  if (!title) {
-    return res.status(401).json({ message: "Title cannot be empty" });
-  }
   console.log(`[POST /notes] \nTitle: ${title}\nnote: ${note}`);
+  if (!title) {
+    return res.status(400).json({ message: "Title cannot be empty" });
+  }
   await Notes.create({
     username: req.username,
     title: req.body.title,
@@ -127,8 +127,6 @@ export const getSingleNote = async (req: Request, res: Response) => {
     console.error("Error fetching record from DB with ID: " + id);
     return res.status(500).json({ message: "Error Fetching Record from DB" });
   }
-  console.log("Returning Note:");
-  console.log(note);
   return res.status(200).json(note);
 };
 

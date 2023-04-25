@@ -17,7 +17,7 @@ const app = express();
 const port = 8080;
 
 const corsOptions = {
-  origin: '*',
+  origin: true,
   credentials: true,
   optionSuccessStatus: 200,
 }
